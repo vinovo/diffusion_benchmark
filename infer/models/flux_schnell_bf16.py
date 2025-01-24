@@ -13,4 +13,4 @@ class FluxSchnellBF16(ModelInterface):
 
     def infer(self, prompt: str):
         generator = torch.Generator("cuda").manual_seed(self.seed)
-        return self.pipeline(prompt, num_inference_steps=4, guidance_scale=0.0, generator=generator).images[0]
+        return self.pipeline(prompt, num_inference_steps=4, guidance_scale=1.0, generator=generator).images[0]

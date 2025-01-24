@@ -43,13 +43,13 @@ def run_inference(model: ModelInterface, data_tuples, output_dir):
 def main():
     parser = argparse.ArgumentParser(description="Run inference using specified model.")
     parser.add_argument("--mode", choices=["generate", "reference"], required=True, help="Specify whether to generate or reference.")
+    parser.add_argument("--model", choices=["FluxSchnell", "FluxDev", "FluxSchnellSD", "FluxDevSD"], required=True, help="Specify the model family to use.")
     parser.add_argument("--output_folder", type=str, default="./output", help="Base output folder.")
-    parser.add_argument("--num_images", type=int, default=5, help="Number of images to sample.")
+    parser.add_argument("--num_images", type=int, default=200, help="Number of images to sample.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
     args = parser.parse_args()
-    
-    is_reference = args.mode == 'reference'
 
+    is_reference = args.mode == "reference"
 
     # Set random seed
     random.seed(args.seed)
@@ -67,8 +67,15 @@ def main():
     # Sample specified number of items
     data_tuples = random.sample(list(meta_data.items()), min(args.num_images, len(meta_data)))
 
-    # Load model based on arguments
-    model = FluxSchnellBF16() if is_reference else FluxSchnellW4A4()
+    # Load model based on arguments and mode
+    if args.model == "FluxSchnell":
+        model = FluxSchnellBF16(seed=args.seed) if is_reference else FluxSchnellW4A4(seed=args.seed)
+    elif args.model == "FluxDev":
+        model = FluxDevBF16(seed=args.seed) if is_reference else FluxDevW4A4(seed=args.seed)
+    elif args.model == "FluxSchnellSD":
+        model = FluxSchnellSDFP16(seed=args.seed) if is_reference else FluxSchnellSDQ40(seed=args.seed)
+    elif args.model == "FluxDevSD":
+        model = FluxDevSDFP16(seed=args.seed) if is_reference else FluxDevSDQ40(seed=args.seed)
 
     # Run inference
     processed_metadata = run_inference(model, data_tuples, output_dir)
