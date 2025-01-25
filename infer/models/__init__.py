@@ -7,6 +7,7 @@ from .flux_schnell_sd_fp16 import FluxSchnellSDFP16
 from .flux_schnell_sd_q40 import FluxSchnellSDQ40
 from .flux_dev_sd_fp16 import FluxDevSDFP16
 from .flux_dev_sd_q40 import FluxDevSDQ40
+from .sdxl_turbo_fp16 import SDXLTurboFP16
 
 __all__ = [
     "ModelInterface", 
@@ -17,5 +18,6 @@ __all__ = [
     "FluxSchnellSDFP16", 
     "FluxSchnellSDQ40",
     "FluxDevSDFP16",
-    "FluxDevSDQ40"
+    "FluxDevSDQ40",
+    "SDXLTurboFP16"
 ]

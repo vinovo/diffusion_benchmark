@@ -43,10 +43,11 @@ def run_inference(model: ModelInterface, data_tuples, output_dir):
 def main():
     parser = argparse.ArgumentParser(description="Run inference using specified model.")
     parser.add_argument("--mode", choices=["generate", "reference"], required=True, help="Specify whether to generate or reference.")
-    parser.add_argument("--model", choices=["FluxSchnell", "FluxDev", "FluxSchnellSD", "FluxDevSD"], required=True, help="Specify the model family to use.")
+    parser.add_argument("--model", choices=["FluxSchnell", "FluxDev", "FluxSchnellSD", "FluxDevSD", "SDXLTurbo"], required=True, help="Specify the model family to use.")
     parser.add_argument("--output_folder", type=str, default="./output", help="Base output folder.")
     parser.add_argument("--num_images", type=int, default=200, help="Number of images to sample.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
+    parser.add_argument("--meta_data_file", type=str, default="meta_data.json", help="Path to the metadata JSON file.")
     args = parser.parse_args()
 
     is_reference = args.mode == "reference"
@@ -56,7 +57,7 @@ def main():
     torch.manual_seed(args.seed)
 
     # Paths
-    json_file_path = "meta_data.json"
+    json_file_path = args.meta_data_file
     output_dir = os.path.join(args.output_folder, args.mode)
     output_meta_file_path = os.path.join(output_dir, "meta_data.json")
 
@@ -76,6 +77,8 @@ def main():
         model = FluxSchnellSDFP16(seed=args.seed) if is_reference else FluxSchnellSDQ40(seed=args.seed)
     elif args.model == "FluxDevSD":
         model = FluxDevSDFP16(seed=args.seed) if is_reference else FluxDevSDQ40(seed=args.seed)
+    elif args.model == "SDXLTurbo":
+        model = SDXLTurboFP16(seed=args.seed)
 
     # Run inference
     processed_metadata = run_inference(model, data_tuples, output_dir)
