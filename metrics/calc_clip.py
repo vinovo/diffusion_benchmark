@@ -37,7 +37,8 @@ total_score = 0
 count = 0
 
 # Iterate through metadata
-for image_key, meta in metadata.items():
+for index, (image_key, meta) in enumerate(metadata.items()):
+    print(f"Processing image {index + 1}/{len(metadata)}: {image_key}")
     image_path = os.path.join(input_folder, f"{image_key}.png")
     prompt = meta["prompt"]
 

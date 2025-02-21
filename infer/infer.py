@@ -48,7 +48,8 @@ def main():
     parser.add_argument("--num_images", type=int, default=200, help="Number of images to sample.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
     parser.add_argument("--meta_data_file", type=str, default="meta_data.json", help="Path to the metadata JSON file.")
-    parser.add_argument("--quant_type", type=str, default="w4a4", help="Type of qunatization [w4a4, q40, q2k]")
+    parser.add_argument("--quant_type", type=str, default="w4a4", help="Type of quantization [w4a4, q40, q2k]")
+    parser.add_argument("--offset", type=int, default=0, help="Offset index to start sampling from.")
     args = parser.parse_args()
 
     is_reference = args.mode == "reference"
@@ -66,8 +67,10 @@ def main():
     with open(json_file_path, "r") as file:
         meta_data = json.load(file)
 
-    # Sample specified number of items
-    data_tuples = random.sample(list(meta_data.items()), min(args.num_images, len(meta_data)))
+    # Convert metadata to list and apply offset
+    data_list = list(meta_data.items())
+    offset = min(args.offset, len(data_list))
+    sampled_data = random.sample(data_list[offset:], min(args.num_images, len(data_list) - offset))
 
     # Load model based on arguments and mode
     if args.model == "FluxSchnell":
@@ -100,7 +103,7 @@ def main():
         model = SDXLTurboSDFP16(seed=args.seed) if is_reference else SDXLTurboSDQ40(seed=args.seed)
 
     # Run inference
-    processed_metadata = run_inference(model, data_tuples, output_dir)
+    processed_metadata = run_inference(model, sampled_data, output_dir)
 
     # Save processed metadata to a JSON file
     with open(output_meta_file_path, "w") as output_meta_file:
