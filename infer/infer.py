@@ -44,10 +44,11 @@ def main():
     parser = argparse.ArgumentParser(description="Run inference using specified model.")
     parser.add_argument("--mode", choices=["generate", "reference"], required=True, help="Specify whether to generate or reference.")
     parser.add_argument("--model", choices=["FluxSchnell", "FluxDev", "FluxSchnellSD", "FluxDevSD", "SDXLTurbo", "SDXLTurboSD"], required=True, help="Specify the model family to use.")
-    parser.add_argument("--output_folder", type=str, default="./output", help="Base output folder.")
+    parser.add_argument("--output_dir", type=str, default="./output", help="Base output folder.")
     parser.add_argument("--num_images", type=int, default=200, help="Number of images to sample.")
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
     parser.add_argument("--meta_data_file", type=str, default="meta_data.json", help="Path to the metadata JSON file.")
+    parser.add_argument("--quant_type", type=str, default="w4a4", help="Type of qunatization [w4a4, q40, q2k]")
     args = parser.parse_args()
 
     is_reference = args.mode == "reference"
@@ -58,7 +59,7 @@ def main():
 
     # Paths
     json_file_path = args.meta_data_file
-    output_dir = os.path.join(args.output_folder, args.mode)
+    output_dir = os.path.join(args.output_dir, args.mode)
     output_meta_file_path = os.path.join(output_dir, "meta_data.json")
 
     # Load metadata
@@ -74,9 +75,25 @@ def main():
     elif args.model == "FluxDev":
         model = FluxDevBF16(seed=args.seed) if is_reference else FluxDevW4A4(seed=args.seed)
     elif args.model == "FluxSchnellSD":
-        model = FluxSchnellSDFP16(seed=args.seed) if is_reference else FluxSchnellSDQ40(seed=args.seed)
+        if is_reference:
+            model = FluxSchnellSDFP16(seed=args.seed)
+        else:
+            if args.quant_type == 'q2k':
+                print('using q2k')
+                model = FluxSchnellSDQ2K(seed=args.seed)
+            else:
+                print('using q40')
+                model = FluxSchnellSDQ40(seed=args.seed)
     elif args.model == "FluxDevSD":
-        model = FluxDevSDFP16(seed=args.seed) if is_reference else FluxDevSDQ40(seed=args.seed)
+        if is_reference:
+            model = FluxDevSDFP16(seed=args.seed)
+        else:
+            if args.quant_type == 'q2k':
+                print('using q2k')
+                model = FluxDevSDQ2K(seed=args.seed)
+            else:
+                print('using q40')
+                model = FluxDevSDQ40(seed=args.seed)
     elif args.model == "SDXLTurbo":
         model = SDXLTurboFP16(seed=args.seed) if is_reference else None
     elif args.model == "SDXLTurboSD":

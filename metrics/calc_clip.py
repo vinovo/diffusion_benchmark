@@ -10,10 +10,11 @@ import argparse
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description="Calculate CLIP scores for images.")
 parser.add_argument("--mode", choices=["reference", "generate"], required=True, help="Specify the mode: 'reference' or 'generate'.")
+parser.add_argument("--input_folder", default="./output/", help="Optionally specify an input folder. Defaults to './output/'.")
 args = parser.parse_args()
 
 # Set the folder path based on mode
-input_folder = "./output/reference" if args.mode == "reference" else "./output/generate"
+input_folder = os.path.join(args.input_folder, "reference" if args.mode == "reference" else "generate")
 metadata_file = os.path.join(input_folder, "meta_data.json")
 
 # Load metadata
