@@ -67,10 +67,13 @@ def main():
     with open(json_file_path, "r") as file:
         meta_data = json.load(file)
 
-    # Convert metadata to list and apply offset
+    # Convert metadata to list and sample first
     data_list = list(meta_data.items())
-    offset = min(args.offset, len(data_list))
-    sampled_data = random.sample(data_list[offset:], min(args.num_images, len(data_list) - offset))
+    sampled_data = random.sample(data_list, min(args.num_images, len(data_list)))
+    
+    # Apply offset
+    offset = min(args.offset, len(sampled_data))
+    sampled_data = sampled_data[offset:]
 
     # Load model based on arguments and mode
     if args.model == "FluxSchnell":

@@ -36,15 +36,14 @@ def calculate_fid_for_folders(
             fid.get_folder_features(
                 folder,
                 feat_model,
-                num_workers=8,
+                num_workers=4,
                 num=None,
                 batch_size=batch_size,
                 device=device,
-                verbose=False,
+                verbose=True,
                 mode=mode,
             ),
             total=num_images // batch_size + (num_images % batch_size > 0),
-            desc=f"Extracting features from {folder}"
         ):
             np_feats.append(batch)
         
@@ -75,4 +74,4 @@ if __name__ == "__main__":
         verbose=True,
     )
 
-    print(f"FID Score: {fid_score:.2f}")
+    print(f"FID Score: {fid_score}")
