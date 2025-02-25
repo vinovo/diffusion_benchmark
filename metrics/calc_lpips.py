@@ -4,6 +4,7 @@ import torch
 from torchvision import transforms
 from PIL import Image
 from lpips import LPIPS  # Assuming LPIPS is installed
+from tqdm import tqdm
 
 # Set input folders and output folder
 generated_folder = "./output/generate"
@@ -32,8 +33,8 @@ results = {}
 total_score = 0
 count = 0
 
-# Iterate through metadata
-for image_key, meta in metadata.items():
+# Iterate through metadata with progress bar
+for image_key, meta in tqdm(metadata.items(), desc="Processing Images"):
     generated_image_path = os.path.join(generated_folder, f"{image_key}.png")
     reference_image_path = os.path.join(reference_folder, f"{image_key}.png")
 

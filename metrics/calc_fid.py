@@ -3,6 +3,7 @@ from datetime import datetime
 import numpy as np
 from cleanfid import fid
 import torch
+from tqdm import tqdm
 
 def calculate_fid_for_folders(
     reference_folder: str,
@@ -28,17 +29,26 @@ def calculate_fid_for_folders(
     """
     def get_fid_features(folder: str) -> tuple[np.ndarray, np.ndarray]:
         feat_model = fid.build_feature_extractor(mode, device)
-        np_feats = fid.get_folder_features(
-            folder,
-            feat_model,
-            num_workers=8,
-            num=None,
-            batch_size=batch_size,
-            device=device,
-            verbose=verbose,
-            mode=mode,
-            description=f"Extracting features from {folder}",
-        )
+        num_images = len(os.listdir(folder))
+        
+        np_feats = []
+        for batch in tqdm(
+            fid.get_folder_features(
+                folder,
+                feat_model,
+                num_workers=8,
+                num=None,
+                batch_size=batch_size,
+                device=device,
+                verbose=False,
+                mode=mode,
+            ),
+            total=num_images // batch_size + (num_images % batch_size > 0),
+            desc=f"Extracting features from {folder}"
+        ):
+            np_feats.append(batch)
+        
+        np_feats = np.concatenate(np_feats, axis=0)
         mu = np.mean(np_feats, axis=0)
         sigma = np.cov(np_feats, rowvar=False)
         return mu, sigma

@@ -4,6 +4,7 @@ import torch
 from torchvision import transforms
 from PIL import Image
 from torchmetrics.functional import peak_signal_noise_ratio
+from tqdm import tqdm
 
 # Set input folders and output folder
 generated_folder = "./output/generate"
@@ -27,8 +28,8 @@ results = {}
 total_psnr = 0
 count = 0
 
-# Iterate through metadata
-for image_key, meta in metadata.items():
+# Iterate through metadata with progress bar
+for image_key, meta in tqdm(metadata.items(), desc="Processing images", unit="image"):
     generated_image_path = os.path.join(generated_folder, f"{image_key}.png")
     reference_image_path = os.path.join(reference_folder, f"{image_key}.png")
 
