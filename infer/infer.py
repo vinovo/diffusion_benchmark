@@ -15,28 +15,31 @@ def run_inference(model: ModelInterface, data_tuples, output_dir):
         prompt = info["prompt"]
         print(f"Generating image for prompt {idx + 1}: {prompt}")
 
-        # Start timing
-        start_time = time.time()
+        try:
+            # Start timing
+            start_time = time.time()
 
-        # Generate the image
-        generated_image = model.infer(prompt)
+            # Generate the image
+            generated_image = model.infer(prompt)
 
-        # End timing
-        end_time = time.time()
+            # End timing
+            end_time = time.time()
 
-        # Calculate latency
-        latency = end_time - start_time
+            # Calculate latency
+            latency = end_time - start_time
 
-        # Update metadata with latency
-        info["latency"] = latency
+            # Update metadata with latency
+            info["latency"] = latency
 
-        # Save the processed metadata
-        processed_metadata[image_id] = info
+            # Save the processed metadata
+            processed_metadata[image_id] = info
 
-        # Save the image using the image ID as the filename
-        output_path = os.path.join(output_dir, f"{image_id}.png")
-        generated_image.save(output_path)
-        print(f"Image saved to {output_path}. Latency: {latency:.4f} seconds.")
+            # Save the image using the image ID as the filename
+            output_path = os.path.join(output_dir, f"{image_id}.png")
+            generated_image.save(output_path)
+            print(f"Image saved to {output_path}. Latency: {latency:.4f} seconds.")
+        except Exception as e:
+            print(f"Skipping sample {idx + 1} due to error: {e}")
 
     return processed_metadata
 
