@@ -103,7 +103,14 @@ def main():
     elif args.model == "SDXLTurbo":
         model = SDXLTurboFP16(seed=args.seed) if is_reference else None
     elif args.model == "SDXLTurboSD":
-        model = SDXLTurboSDFP16(seed=args.seed) if is_reference else SDXLTurboSDQ40(seed=args.seed)
+        if is_reference:
+            model = SDXLTurboSDFP16(seed=args.seed)
+        else:
+            if args.quant_type == 'q2k':
+                print('using q2k')
+                model = SDXLTurboSDQ2K(seed=args.seed)
+            else:
+                model = SDXLTurboSDQ40(seed=args.seed)
 
     # Run inference
     processed_metadata = run_inference(model, sampled_data, output_dir)

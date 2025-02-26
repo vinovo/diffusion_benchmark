@@ -12,6 +12,7 @@ from .flux_dev_sd_q2k import FluxDevSDQ2K
 from .sdxl_turbo_fp16 import SDXLTurboFP16
 from .sdxl_turbo_sd_fp16 import SDXLTurboSDFP16
 from .sdxl_turbo_sd_q40 import SDXLTurboSDQ40
+from .sdxl_turbo_sd_q2k import SDXLTurboSDQ2K
 
 __all__ = [
     "ModelInterface", 
@@ -21,11 +22,12 @@ __all__ = [
     "FluxDevBF16", 
     "FluxSchnellSDFP16", 
     "FluxSchnellSDQ40",
+    "FluxSchnellSDQ2K",
     "FluxDevSDFP16",
     "FluxDevSDQ40",
+    "FluxDevSDQ2K",
     "SDXLTurboFP16",
     "SDXLTurboSDFP16",
     "SDXLTurboSDQ40",
-    "FluxSchnellSDQ2K",
-    "FluxDevSDQ2K",
+    "SDXLTurboSDQ2K"
 ]
